@@ -88,125 +88,118 @@ if [[ "$OS" =~ "Ubuntu" ]]; then #Ubuntu 20.04+ are supported
 fi
 
 ## Read input arguments
-while getopts "u:p:c:q:l:rbvx3h" opt; do
-  case ${opt} in
-	u ) # process option username
-		username=${OPTARG}
-		;;
-
-	# 新参数解析，支持长选项
-	while [[ $# -gt 0 ]]; do
-		case "$1" in
-			-u)
-				username="$2"
-				shift 2
-				;;
-			-p)
-				password="$2"
-				shift 2
-				;;
-			-c)
-				cache="$2"
-				#Check if cache is a number
-				while true; do
-					if ! [[ "$cache" =~ ^[0-9]+$ ]]; then
-						warn "Cache must be a number"
-						need_input "Please enter a cache size (in MB):"
-						read cache
-					else
-						break
-					fi
-				done
-				qb_cache=$cache
-				shift 2
-				;;
-			-q)
-				qb_install=1
-				qb_ver=("qBittorrent-$2")
-				shift 2
-				;;
-			-l)
-				lib_ver=("libtorrent-$2")
-				if [ -z "$qb_ver" ]; then
-					warn "You must choose a qBittorrent version for your libtorrent install"
-					qb_ver_choose
+while [[ $# -gt 0 ]]; do
+	case "$1" in
+		-u)
+			username="$2"
+			shift 2
+			;;
+		-p)
+			password="$2"
+			shift 2
+			;;
+		-c)
+			cache="$2"
+			#Check if cache is a number
+			while true; do
+				if ! [[ "$cache" =~ ^[0-9]+$ ]]; then
+					warn "Cache must be a number"
+					need_input "Please enter a cache size (in MB):"
+					read cache
+				else
+					break
 				fi
-				shift 2
-				;;
-			-r)
-				autoremove_install=1
-				shift
-				;;
-			-b)
-				autobrr_install=1
-				shift
-				;;
-			-v)
-				vertex_install=1
-				shift
-				;;
-			-x)
-				unset bbrv3_install
-				bbrx_install=1
-				shift
-				;;
-			-3)
-				unset bbrx_install
-				bbrv3_install=1
-				shift
-				;;
-			--qb_port)
-				qb_port="$2"
-				shift 2
-				;;
-			--qb_incoming_port)
-				qb_incoming_port="$2"
-				shift 2
-				;;
-			--autobrr_port)
-				autobrr_port="$2"
-				shift 2
-				;;
-			--vertex_port)
-				vertex_port="$2"
-				shift 2
-				;;
-			-h)
-				info "Help:"
-				info "Usage: ./Install.sh -u <username> -p <password> -c <Cache Size(unit:MiB)> -q <qBittorrent version> -l <libtorrent version> -b -v -r -3 -x --qb_port <port> --qb_incoming_port <port> --autobrr_port <port> --vertex_port <port>"
-				info "Example: ./Install.sh -u jerry048 -p 1LDw39VOgors -c 3072 -q 4.3.9 -l v1.2.19 -b -v -r -3 --qb_port 8080 --qb_incoming_port 45000"
-				source <(wget -qO- https://raw.githubusercontent.com/jerry048/Seedbox-Components/main/Torrent%20Clients/qBittorrent/qBittorrent_install.sh)
-				seperator
-				info "Options:"
-				need_input "1. -u : Username"
-				need_input "2. -p : Password"
-				need_input "3. -c : Cache Size for qBittorrent (unit:MiB)"
-				echo -e "\n"
-				need_input "4. -q : qBittorrent version"
-				need_input "Available qBittorrent versions:"
-				tput sgr0; tput setaf 7; tput dim; history -p "${qb_ver_list[@]}"; tput sgr0
-				echo -e "\n"
-				need_input "5. -l : libtorrent version"
-				need_input "Available qBittorrent versions:"
-				tput sgr0; tput setaf 7; tput dim; history -p "${lib_ver_list[@]}"; tput sgr0
-				echo -e "\n"
-				need_input "6. -r : Install autoremove-torrents"
-				need_input "7. -b : Install autobrr"
-				need_input "8. -v : Install vertex"
-				need_input "9. -x : Install BBRx"
-				need_input "10. -3 : Install BBRv3"
-				need_input "11. --qb_port : Specify qBittorrent port"
-				need_input "12. --qb_incoming_port : Specify qBittorrent incoming port"
-				need_input "13. --autobrr_port : Specify autobrr port"
-				need_input "14. --vertex_port : Specify vertex port"
-				need_input "15. -h : Display help message"
-				exit 0
-				;;
-			*)
-				shift
-				;;
-		esac
-	done
+			done
+			qb_cache=$cache
+			shift 2
+			;;
+		-q)
+			qb_install=1
+			qb_ver=("qBittorrent-$2")
+			shift 2
+			;;
+		-l)
+			lib_ver=("libtorrent-$2")
+			if [ -z "$qb_ver" ]; then
+				warn "You must choose a qBittorrent version for your libtorrent install"
+				qb_ver_choose
+			fi
+			shift 2
+			;;
+		-r)
+			autoremove_install=1
+			shift
+			;;
+		-b)
+			autobrr_install=1
+			shift
+			;;
+		-v)
+			vertex_install=1
+			shift
+			;;
+		-x)
+			unset bbrv3_install
+			bbrx_install=1
+			shift
+			;;
+		-3)
+			unset bbrx_install
+			bbrv3_install=1
+			shift
+			;;
+		--qb_port)
+			qb_port="$2"
+			shift 2
+			;;
+		--qb_incoming_port)
+			qb_incoming_port="$2"
+			shift 2
+			;;
+		--autobrr_port)
+			autobrr_port="$2"
+			shift 2
+			;;
+		--vertex_port)
+			vertex_port="$2"
+			shift 2
+			;;
+		-h)
+			info "Help:"
+			info "Usage: ./Install.sh -u <username> -p <password> -c <Cache Size(unit:MiB)> -q <qBittorrent version> -l <libtorrent version> -b -v -r -3 -x --qb_port <port> --qb_incoming_port <port> --autobrr_port <port> --vertex_port <port>"
+			info "Example: ./Install.sh -u jerry048 -p 1LDw39VOgors -c 3072 -q 4.3.9 -l v1.2.19 -b -v -r -3 --qb_port 8080 --qb_incoming_port 45000"
+			source <(wget -qO- https://raw.githubusercontent.com/jerry048/Seedbox-Components/main/Torrent%20Clients/qBittorrent/qBittorrent_install.sh)
+			seperator
+			info "Options:"
+			need_input "1. -u : Username"
+			need_input "2. -p : Password"
+			need_input "3. -c : Cache Size for qBittorrent (unit:MiB)"
+			echo -e "\n"
+			need_input "4. -q : qBittorrent version"
+			need_input "Available qBittorrent versions:"
+			tput sgr0; tput setaf 7; tput dim; history -p "${qb_ver_list[@]}"; tput sgr0
+			echo -e "\n"
+			need_input "5. -l : libtorrent version"
+			need_input "Available qBittorrent versions:"
+			tput sgr0; tput setaf 7; tput dim; history -p "${lib_ver_list[@]}"; tput sgr0
+			echo -e "\n"
+			need_input "6. -r : Install autoremove-torrents"
+			need_input "7. -b : Install autobrr"
+			need_input "8. -v : Install vertex"
+			need_input "9. -x : Install BBRx"
+			need_input "10. -3 : Install BBRv3"
+			need_input "11. --qb_port : Specify qBittorrent port"
+			need_input "12. --qb_incoming_port : Specify qBittorrent incoming port"
+			need_input "13. --autobrr_port : Specify autobrr port"
+			need_input "14. --vertex_port : Specify vertex port"
+			need_input "15. -h : Display help message"
+			exit 0
+			;;
+		*)
+			shift
+			;;
+	esac
+done
 ## Install Seedbox Environment
 tput sgr0; clear
 info "Start Installing Seedbox Environment"
