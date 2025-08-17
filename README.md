@@ -4,7 +4,7 @@ BBR v3 is currently unavailable
 
 # Seedbox Installation Script
 ## Usage
-`bash <(wget -qO- https://raw.githubusercontent.com/jerry048/Dedicated-Seedbox/main/Install.sh) -u <username> -p <password> -c <Cache Size(unit:MiB)> -q <qBittorrent Version> -l <libtorrent Version> -b -v -r -3 -x -o`
+`bash <(wget -qO- https://raw.githubusercontent.com/jerry048/Dedicated-Seedbox/main/Install.sh) -u <username> -p <password> -c <Cache Size(unit:MiB)> -q <qBittorrent Version> -l <libtorrent Version> -b -v -r -3 -x --qb_port <port> --qb_incoming_port <port> --autobrr_port <port> --vertex_port <port>`
 #### Options
 	1. -u: username 
 	2. -p: password
@@ -16,9 +16,12 @@ BBR v3 is currently unavailable
 	8. -r: Install autoremove-torrents
 	9. -3: Enable BBR V3
 	10.-x: Enable BBRx
-	11. Customize ports
+	11. --qb_port: Specify qBittorrent port
+	12. --qb_incoming_port: Specify qBittorrent incoming port
+	13. --autobrr_port: Specify autobrr port
+	14. --vertex_port: Specify vertex port
 #### Example
-`bash <(wget -qO- https://raw.githubusercontent.com/jerry048/Dedicated-Seedbox/main/Install.sh) -u jerry048 -p 1LDw39VOgors -c 3072 -q 4.3.9 -l v1.2.19 -b -r -x`
+`bash <(wget -qO- https://raw.githubusercontent.com/jerry048/Dedicated-Seedbox/main/Install.sh) -u jerry048 -p 1LDw39VOgors -c 3072 -q 4.3.9 -l v1.2.19 -b -r -x --qb_port 8080 --qb_incoming_port 45000 --autobrr_port 12345 --vertex_port 23456`
 
 ##### Explanation
 	1. username is jerry048

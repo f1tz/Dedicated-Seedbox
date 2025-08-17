@@ -80,7 +80,7 @@ if [[ "$OS" =~ "Debian" ]]; then	#Debian 10+ are supported
 fi
 
 if [[ "$OS" =~ "Ubuntu" ]]; then #Ubuntu 20.04+ are supported
-	if [[ ! "$VER" =~ "20" ]] && [[ ! "$VER" =~ "22" ]] && [[ ! "$VER" =~ "23" ]]; then
+	if [[ ! "$VER" =~ "20" ]] && [[ ! "$VER" =~ "22" ]] && [[ ! "$VER" =~ "23" ]] && [[ ! "$VER" =~ "24" ]]; then
 		fail "$OS $VER is not supported"
 		info "Only Ubuntu 20.04+ is supported"
 		exit 1
@@ -88,156 +88,125 @@ if [[ "$OS" =~ "Ubuntu" ]]; then #Ubuntu 20.04+ are supported
 fi
 
 ## Read input arguments
-while getopts "u:p:c:q:l:rbvx3oh" opt; do
+while getopts "u:p:c:q:l:rbvx3h" opt; do
   case ${opt} in
 	u ) # process option username
 		username=${OPTARG}
 		;;
-	p ) # process option password
-		password=${OPTARG}
-		;;
-	c ) # process option cache
-		cache=${OPTARG}
-		#Check if cache is a number
-		while true
-		do
-			if ! [[ "$cache" =~ ^[0-9]+$ ]]; then
-				warn "Cache must be a number"
-				need_input "Please enter a cache size (in MB):"
-				read cache
-			else
-				break
-			fi
-		done
-		#Converting the cache to qBittorrent's unit (MiB)
-		qb_cache=$cache
-		;;
-	q ) # process option cache
-		qb_install=1
-		qb_ver=("qBittorrent-${OPTARG}")
-		;;
-	l ) # process option libtorrent
-		lib_ver=("libtorrent-${OPTARG}")
-		#Check if qBittorrent version is specified
-		if [ -z "$qb_ver" ]; then
-			warn "You must choose a qBittorrent version for your libtorrent install"
-			qb_ver_choose
-		fi
-		;;
-	r ) # process option autoremove
-		autoremove_install=1
-		;;
-	b ) # process option autobrr
-		autobrr_install=1
-		;;
-	v ) # process option vertex
-		vertex_install=1
-		;;
-	x ) # process option bbr
-		unset bbrv3_install
-		bbrx_install=1	  
-		;;
-	3 ) # process option bbr
-		unset bbrx_install
-		bbrv3_install=1
-		;;
-	o ) # process option port
-		if [[ -n "$qb_install" ]]; then
-			need_input "Please enter qBittorrent port:"
-			read qb_port
-			while true
-			do
-				if ! [[ "$qb_port" =~ ^[0-9]+$ ]]; then
-					warn "Port must be a number"
-					need_input "Please enter qBittorrent port:"
-					read qb_port
-				else
-					break
-				fi
-			done
-			need_input "Please enter qBittorrent incoming port:"
-			read qb_incoming_port
-			while true
-			do
-				if ! [[ "$qb_incoming_port" =~ ^[0-9]+$ ]]; then
-						warn "Port must be a number"
-						need_input "Please enter qBittorrent incoming port:"
-						read qb_incoming_port
-				else
-					break
-				fi
-			done
-		fi
-		if [[ -n "$autobrr_install" ]]; then
-			need_input "Please enter autobrr port:"
-			read autobrr_port
-			while true
-			do
-				if ! [[ "$autobrr_port" =~ ^[0-9]+$ ]]; then
-					warn "Port must be a number"
-					need_input "Please enter autobrr port:"
-					read autobrr_port
-				else
-					break
-				fi
-			done
-		fi
-		if [[ -n "$vertex_install" ]]; then
-			need_input "Please enter vertex port:"
-			read vertex_port
-			while true
-			do
-				if ! [[ "$vertex_port" =~ ^[0-9]+$ ]]; then
-					warn "Port must be a number"
-					need_input "Please enter vertex port:"
-					read vertex_port
-				else
-					break
-				fi
-			done
-		fi
-		;;
-	h ) # process option help
-		info "Help:"
-		info "Usage: ./Install.sh -u <username> -p <password> -c <Cache Size(unit:MiB)> -q <qBittorrent version> -l <libtorrent version> -b -v -r -3 -x -p"
-		info "Example: ./Install.sh -u jerry048 -p 1LDw39VOgors -c 3072 -q 4.3.9 -l v1.2.19 -b -v -r -3"
-		source <(wget -qO- https://raw.githubusercontent.com/jerry048/Seedbox-Components/main/Torrent%20Clients/qBittorrent/qBittorrent_install.sh)
-		seperator
-		info "Options:"
-		need_input "1. -u : Username"
-		need_input "2. -p : Password"
-		need_input "3. -c : Cache Size for qBittorrent (unit:MiB)"
-		echo -e "\n"
-		need_input "4. -q : qBittorrent version"
-		need_input "Available qBittorrent versions:"
-		tput sgr0; tput setaf 7; tput dim; history -p "${qb_ver_list[@]}"; tput sgr0
-		echo -e "\n"
-		need_input "5. -l : libtorrent version"
-		need_input "Available qBittorrent versions:"
-		tput sgr0; tput setaf 7; tput dim; history -p "${lib_ver_list[@]}"; tput sgr0
-		echo -e "\n"
-		need_input "6. -r : Install autoremove-torrents"
-		need_input "7. -b : Install autobrr"
-		need_input "8. -v : Install vertex"
-		need_input "9. -x : Install BBRx"
-		need_input "10. -3 : Install BBRv3"
-		need_input "11. -p : Specify ports for qBittorrent, autobrr and vertex"
-		need_input "12. -h : Display help message"
-		exit 0
-		;;
-	\? ) 
-		info "Help:"
-		info_2 "Usage: ./Install.sh -u <username> -p <password> -c <Cache Size(unit:MiB)> -q <qBittorrent version> -l <libtorrent version> -b -v -r -3 -x -p"
-		info_2 "Example ./Install.sh -u jerry048 -p 1LDw39VOgors -c 3072 -q 4.3.9 -l v1.2.19 -b -v -r -3"
-		exit 1
-		;;
-	esac
-done
 
-# System Update & Dependencies Install
-info "Start System Update & Dependencies Install"
-update
-
+	# 新参数解析，支持长选项
+	while [[ $# -gt 0 ]]; do
+		case "$1" in
+			-u)
+				username="$2"
+				shift 2
+				;;
+			-p)
+				password="$2"
+				shift 2
+				;;
+			-c)
+				cache="$2"
+				#Check if cache is a number
+				while true; do
+					if ! [[ "$cache" =~ ^[0-9]+$ ]]; then
+						warn "Cache must be a number"
+						need_input "Please enter a cache size (in MB):"
+						read cache
+					else
+						break
+					fi
+				done
+				qb_cache=$cache
+				shift 2
+				;;
+			-q)
+				qb_install=1
+				qb_ver=("qBittorrent-$2")
+				shift 2
+				;;
+			-l)
+				lib_ver=("libtorrent-$2")
+				if [ -z "$qb_ver" ]; then
+					warn "You must choose a qBittorrent version for your libtorrent install"
+					qb_ver_choose
+				fi
+				shift 2
+				;;
+			-r)
+				autoremove_install=1
+				shift
+				;;
+			-b)
+				autobrr_install=1
+				shift
+				;;
+			-v)
+				vertex_install=1
+				shift
+				;;
+			-x)
+				unset bbrv3_install
+				bbrx_install=1
+				shift
+				;;
+			-3)
+				unset bbrx_install
+				bbrv3_install=1
+				shift
+				;;
+			--qb_port)
+				qb_port="$2"
+				shift 2
+				;;
+			--qb_incoming_port)
+				qb_incoming_port="$2"
+				shift 2
+				;;
+			--autobrr_port)
+				autobrr_port="$2"
+				shift 2
+				;;
+			--vertex_port)
+				vertex_port="$2"
+				shift 2
+				;;
+			-h)
+				info "Help:"
+				info "Usage: ./Install.sh -u <username> -p <password> -c <Cache Size(unit:MiB)> -q <qBittorrent version> -l <libtorrent version> -b -v -r -3 -x --qb_port <port> --qb_incoming_port <port> --autobrr_port <port> --vertex_port <port>"
+				info "Example: ./Install.sh -u jerry048 -p 1LDw39VOgors -c 3072 -q 4.3.9 -l v1.2.19 -b -v -r -3 --qb_port 8080 --qb_incoming_port 45000"
+				source <(wget -qO- https://raw.githubusercontent.com/jerry048/Seedbox-Components/main/Torrent%20Clients/qBittorrent/qBittorrent_install.sh)
+				seperator
+				info "Options:"
+				need_input "1. -u : Username"
+				need_input "2. -p : Password"
+				need_input "3. -c : Cache Size for qBittorrent (unit:MiB)"
+				echo -e "\n"
+				need_input "4. -q : qBittorrent version"
+				need_input "Available qBittorrent versions:"
+				tput sgr0; tput setaf 7; tput dim; history -p "${qb_ver_list[@]}"; tput sgr0
+				echo -e "\n"
+				need_input "5. -l : libtorrent version"
+				need_input "Available qBittorrent versions:"
+				tput sgr0; tput setaf 7; tput dim; history -p "${lib_ver_list[@]}"; tput sgr0
+				echo -e "\n"
+				need_input "6. -r : Install autoremove-torrents"
+				need_input "7. -b : Install autobrr"
+				need_input "8. -v : Install vertex"
+				need_input "9. -x : Install BBRx"
+				need_input "10. -3 : Install BBRv3"
+				need_input "11. --qb_port : Specify qBittorrent port"
+				need_input "12. --qb_incoming_port : Specify qBittorrent incoming port"
+				need_input "13. --autobrr_port : Specify autobrr port"
+				need_input "14. --vertex_port : Specify vertex port"
+				need_input "15. -h : Display help message"
+				exit 0
+				;;
+			*)
+				shift
+				;;
+		esac
+	done
 ## Install Seedbox Environment
 tput sgr0; clear
 info "Start Installing Seedbox Environment"

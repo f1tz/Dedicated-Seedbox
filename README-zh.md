@@ -1,7 +1,7 @@
 
 # Seedbox Installation Script
 ## 用法
-`bash <(wget -qO- https://raw.githubusercontent.com/jerry048/Dedicated-Seedbox/main/Install.sh) -u <用戶名稱> -p <密碼> -c <緩存大小(單位:MiB)> -q <qBittorrent 版本> -l <libtorrent 版本> -b -v -r -3 -x -o`
+`bash <(wget -qO- https://raw.githubusercontent.com/jerry048/Dedicated-Seedbox/main/Install.sh) -u <用戶名稱> -p <密碼> -c <緩存大小(單位:MiB)> -q <qBittorrent 版本> -l <libtorrent 版本> -b -v -r -3 -x --qb_port <端口> --qb_incoming_port <端口> --autobrr_port <端口> --vertex_port <端口>`
 #### Options
 	1. -u: 用戶名稱
 	2. -p: 密碼
@@ -13,9 +13,12 @@
 	8. -r: 安裝 autoremove-torrents
 	9. -3: 啓動 BBR V3
 	10.-x: 啓動 BBRx
-	11.-o: 自定義端口
+	11.--qb_port: 指定 qBittorrent 端口
+	12.--qb_incoming_port: 指定 qBittorrent 入站端口
+	13.--autobrr_port: 指定 autobrr 端口
+	14.--vertex_port: 指定 vertex 端口
 #### 範例
-`bash <(wget -qO- https://raw.githubusercontent.com/jerry048/Dedicated-Seedbox/main/Install.sh) -u jerry048 -p 1LDw39VOgors -c 3072 -q 4.3.9 -l v1.2.19 -v -x`
+`bash <(wget -qO- https://raw.githubusercontent.com/jerry048/Dedicated-Seedbox/main/Install.sh) -u jerry048 -p 1LDw39VOgors -c 3072 -q 4.3.9 -l v1.2.19 -v -x --qb_port 8080 --qb_incoming_port 45000 --autobrr_port 12345 --vertex_port 23456`
 
 ##### 解釋
 	1. 用戶名稱 是 jerry048
